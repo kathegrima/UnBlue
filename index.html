@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UnBlue – Carica la tua settimana</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #EEF2FF;
+      --white: #FFFFFF;
+      --ink: #1A1A2E;
+      --ink2: #3D4060;
+      --muted: #8A8FA8;
+      --border: #D4D9F0;
+      --blue-dark: #2B3DAB;
+      --blue-mid: #3A72C8;
+      --blue-light: #4BA8E0;
+      --blue-pale: #DBEAFE;
+      --orange: #FF6B2B;
+      --orange-light: #FFF2EC;
+      --orange-mid: #FED7B8;
+      --radius: 20px;
+      --radius-sm: 12px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Blobs ── */
+    .blob-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: .5; }
+    .blob-1 { width: 600px; height: 600px; background: #BFDBFE; top: -200px; right: -150px; }
+    .blob-2 { width: 450px; height: 450px; background: #FED7B8; bottom: -120px; left: -120px; }
+    .blob-3 { width: 300px; height: 300px; background: #C7D2FE; top: 40%; left: 40%; }
+
+    .page { position: relative; z-index: 1; }
+
+    /* ── Nav ── */
+    nav {
+      max-width: 900px; margin: 0 auto;
+      padding: 1.4rem 2rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo img {
+      height: 38px; width: auto;
+      display: block;
+    }
+    .nav-pill {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: .35rem .9rem;
+      font-size: .78rem; font-weight: 600; color: var(--orange);
+      display: flex; align-items: center; gap: .4rem;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 900px; margin: 0 auto;
+      padding: 2.5rem 2rem 1rem;
+      display: grid; grid-template-columns: 1fr auto;
+      gap: 2rem; align-items: center;
+    }
+    @media (max-width: 620px) { .hero { grid-template-columns: 1fr; } .hero-illo { display: none !important; } }
+
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 20px; padding: .3rem .9rem;
+      font-size: .76rem; font-weight: 700; color: var(--ink2);
+      letter-spacing: .05em; text-transform: uppercase;
+      margin-bottom: 1.2rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6.5vw, 4.6rem);
+      font-weight: 900; letter-spacing: -.04em; line-height: 1.08;
+      color: var(--ink); margin-bottom: 1.2rem;
+    }
+    /* "il blu" → logo gradient; "energia" → orange */
+    .h1-blue {
+      background: linear-gradient(90deg, var(--blue-dark), var(--blue-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .h1-energy {
+      color: var(--orange);
+      -webkit-text-fill-color: var(--orange);
+      position: relative;
+    }
+    .h1-energy::after {
+      content: '';
+      position: absolute; left: 0; bottom: -3px; right: 0; height: 3px;
+      background: var(--orange); border-radius: 2px;
+    }
+
+    .hero-sub {
+      color: var(--ink2); font-size: 1rem; line-height: 1.7;
+      max-width: 400px; margin-bottom: 1.6rem;
+    }
+    .counter-chip {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: .55rem 1rem;
+      font-size: .82rem; color: var(--ink2);
+      box-shadow: 0 2px 10px rgba(0,0,0,.05);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--blue-dark); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+    /* ── SVG Illustration ── */
+    .hero-illo {
+      width: 210px; height: 210px;
+      background: var(--white); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 40px rgba(43,61,171,.12);
+      flex-shrink: 0;
+    }
+
+    /* ── Card ── */
+    .card-section { max-width: 900px; margin: 2.5rem auto 0; padding: 0 2rem 4rem; }
+    .main-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      box-shadow: 0 4px 30px rgba(43,61,171,.08);
+    }
+    .card-label {
+      font-size: .75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--muted); margin-bottom: 1rem;
+    }
+
+    /* ── Chips ── */
+    .chips { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.2rem; }
+    .chip {
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 20px; padding: .3rem .85rem;
+      font-size: .8rem; font-weight: 500; cursor: pointer;
+      transition: all .2s; color: var(--ink2); user-select: none;
+    }
+    .chip:hover { border-color: var(--blue-dark); color: var(--blue-dark); }
+    .chip.active { background: var(--blue-pale); border-color: var(--blue-dark); color: var(--blue-dark); font-weight: 600; }
+
+    textarea {
+      width: 100%;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm); color: var(--ink);
+      font-size: .97rem; font-family: inherit;
+      line-height: 1.7; padding: 1rem 1.2rem;
+      resize: none; min-height: 110px; outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    textarea:focus {
+      border-color: var(--blue-dark); background: var(--white);
+      box-shadow: 0 0 0 3px rgba(43,61,171,.1);
+    }
+    textarea::placeholder { color: var(--muted); }
+
+    /* ── CTA ── */
+    .cta-wrap { margin-top: 1.2rem; display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+    .cta {
+      flex: 1; min-width: 200px;
+      padding: .95rem 1.6rem;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+      border: none; border-radius: var(--radius-sm);
+      color: #fff; font-size: .98rem; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem;
+      transition: transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 20px rgba(43,61,171,.3);
+    }
+    .cta:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(43,61,171,.35); }
+    .cta:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+    .cta-hint { font-size: .78rem; color: var(--muted); }
+
+    .spinner {
+      width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+      border-radius: 50%; animation: spin .7s linear infinite; display: none;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-box {
+      margin-top: .8rem; background: #FEF2F2; border: 1px solid #FECACA;
+      border-radius: var(--radius-sm); padding: .75rem 1rem;
+      color: #DC2626; font-size: .87rem; display: none;
+    }
+
+    /* ── Response ── */
+    .response-wrap { margin-top: 1.8rem; display: none; animation: fadeUp .4s ease; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    .response-header { display: flex; align-items: center; gap: .7rem; margin-bottom: .9rem; }
+    .response-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue-light));
+      display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .response-meta strong { display: block; font-size: .9rem; color: var(--ink); }
+    .response-meta span { font-size: .78rem; color: var(--muted); }
+
+    .response-bubble {
+      background: var(--orange-light); border: 1px solid var(--orange-mid);
+      border-radius: 0 var(--radius) var(--radius) var(--radius);
+      padding: 1.5rem 1.7rem;
+    }
+    .response-text { color: var(--ink2); font-size: .97rem; line-height: 1.9; }
+    .response-text strong { color: var(--ink); font-weight: 700; }
+    .response-text em { color: var(--orange); font-style: normal; font-weight: 600; }
+    blockquote {
+      border-left: 3px solid var(--orange); margin: 1rem 0; padding: .4rem 1rem;
+      color: #9A3412; font-style: italic; background: rgba(255,107,43,.07); border-radius: 0 8px 8px 0;
+    }
+    .response-actions { display: flex; gap: .5rem; margin-top: 1rem; flex-wrap: wrap; }
+    .act-btn {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 8px; color: var(--muted); font-size: .78rem;
+      padding: .38rem .8rem; cursor: pointer; transition: all .18s; font-family: inherit;
+    }
+    .act-btn:hover { border-color: var(--blue-dark); color: var(--blue-dark); }
+
+    /* ── Stats ── */
+    .stats { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .stat-card {
+      flex: 1; min-width: 140px; background: var(--white);
+      border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1.1rem 1.2rem;
+    }
+    .stat-val { font-size: 1.6rem; font-weight: 900; letter-spacing: -.04em; color: var(--blue-dark); }
+    .stat-val .unit { font-size: 1rem; font-weight: 500; }
+    .stat-lab { font-size: .78rem; color: var(--muted); margin-top: .2rem; }
+
+    footer {
+      max-width: 900px; margin: 0 auto; padding: 0 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: .78rem; color: var(--muted); flex-wrap: wrap; gap: .5rem;
+    }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--ink); }
+  </style>
+</head>
+<body>
+<div class="blob-wrap">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="page">
+  <nav>
+    <div class="nav-logo">
+      <img src="unblue.jpg" alt="UnBlue" />
+    </div>
+    <div class="nav-pill">⚡ Anti Blue Monday</div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">🗓️ Il lunedì più pesante dell'anno</div>
+      <h1>Trasforma<br><span class="h1-blue">il blu</span><br>in <span class="h1-energy">energia.</span></h1>
+      <p class="hero-sub">Scrivi cosa ti pesa oggi. Ti rispondiamo con le parole giuste per ricaricarti e ripartire.</p>
+      <div class="counter-chip">
+        <span class="dot"></span>
+        <span id="counterText">Calcolando…</span>
+      </div>
+    </div>
+
+    <div class="hero-illo">
+      <svg width="148" height="148" viewBox="0 0 148 148" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="74" cy="44" r="21" fill="#DBEAFE"/>
+        <path d="M39 108 Q39 77 74 77 Q109 77 109 108 L109 128 Q109 133 104 133 L44 133 Q39 133 39 128 Z" fill="#DBEAFE"/>
+        <path d="M81 52 L67 78 L77 78 L65 104 L87 73 L75 73 Z" fill="#FF6B2B" opacity=".95"/>
+        <circle cx="36" cy="40" r="4" fill="#4BA8E0" opacity=".7"/>
+        <circle cx="114" cy="56" r="3" fill="#2B3DAB" opacity=".5"/>
+        <circle cx="107" cy="33" r="5" fill="#FED7B8" opacity=".85"/>
+        <circle cx="26" cy="68" r="3" fill="#BFDBFE" opacity=".8"/>
+        <circle cx="120" cy="90" r="4" fill="#FF6B2B" opacity=".4"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="card-section">
+    <div class="main-card">
+      <div class="card-label">Cosa stai affrontando?</div>
+      <div class="chips" id="chips">
+        <div class="chip" onclick="pickChip(this)">💼 Lavoro</div>
+        <div class="chip" onclick="pickChip(this)">📚 Studio</div>
+        <div class="chip" onclick="pickChip(this)">🏃 Energia</div>
+        <div class="chip" onclick="pickChip(this)">🎨 Creatività</div>
+        <div class="chip" onclick="pickChip(this)">❤️ Relazioni</div>
+        <div class="chip" onclick="pickChip(this)">😴 Stanchezza</div>
+        <div class="chip" onclick="pickChip(this)">😰 Ansia</div>
+      </div>
+      <textarea id="userInput" placeholder="Dimmi tutto. Cosa ti pesa? Cosa ti blocca? Sono qui…"></textarea>
+      <div class="error-box" id="errorBox"></div>
+      <div class="cta-wrap">
+        <button class="cta" id="ctaBtn" onclick="generate()">
+          <div class="spinner" id="spinner"></div>
+          <span id="btnText">⚡ Dammi la carica</span>
+        </button>
+        <span class="cta-hint">Gratis, senza registrazione.</span>
+      </div>
+
+      <div class="response-wrap" id="responseWrap">
+        <div class="response-header">
+          <div class="response-avatar">⚡</div>
+          <div class="response-meta">
+            <strong>UnBlue</strong>
+            <span>Il tuo boost del giorno</span>
+          </div>
+        </div>
+        <div class="response-bubble">
+          <div class="response-text" id="responseText"></div>
+          <div class="response-actions">
+            <button class="act-btn" onclick="copyText()">📋 Copia</button>
+            <button class="act-btn" onclick="resetForm()">↩ Ricomincia</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-val" id="statDays">—</div>
+        <div class="stat-lab">giorni al prossimo Blue Monday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">3<span class="unit">°</span></div>
+        <div class="stat-lab">lunedì di gennaio ogni anno</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">∞</div>
+        <div class="stat-lab">boost disponibili, sempre gratis</div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>© 2026 UnBlue — Trasforma ogni lunedì</span>
+    <span>Powered by <a href="https://gemini.google.com" target="_blank">Google Gemini</a></span>
+  </footer>
+</div>
+
+<script>
+  const WORKER_URL = 'https://motivazionale.fumettiastro.workers.dev/';
+
+  function nextBlueMondayDate() {
+    const now = new Date();
+    const bm = y => {
+      const jan1 = new Date(y, 0, 1);
+      const d = jan1.getDay();
+      const fm = d <= 1 ? 1 + (1 - d) : 1 + (8 - d);
+      return new Date(y, 0, fm + 14);
+    };
+    let b = bm(now.getFullYear());
+    if (b <= now) b = bm(now.getFullYear() + 1);
+    return b;
+  }
+
+  (function() {
+    const bm = nextBlueMondayDate();
+    const diff = Math.ceil((bm - new Date()) / 864e5);
+    const fmt = bm.toLocaleDateString('it-IT', { day:'numeric', month:'long', year:'numeric' });
+    document.getElementById('statDays').textContent = diff;
+    document.getElementById('counterText').textContent =
+      diff === 0 ? 'Oggi è il Blue Monday — sei nel posto giusto!' :
+      `Prossimo Blue Monday: ${fmt} (tra ${diff} giorni)`;
+  })();
+
+  function pickChip(el) {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  async function generate() {
+    const text = document.getElementById('userInput').value.trim();
+    if (!text) { showError('✏️ Scrivi qualcosa per ricevere il tuo boost!'); return; }
+    setLoading(true); hideError();
+    document.getElementById('responseWrap').style.display = 'none';
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userMessage: text })
+      });
+      if (!res.ok) throw new Error('Errore server: ' + res.status);
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      showResponse(data.text);
+    } catch(e) { showError('❌ ' + e.message); }
+    finally { setLoading(false); }
+  }
+
+  function setLoading(on) {
+    document.getElementById('ctaBtn').disabled = on;
+    document.getElementById('spinner').style.display = on ? 'block' : 'none';
+    document.getElementById('btnText').textContent = on ? 'Generando…' : '⚡ Dammi la carica';
+  }
+
+  function showResponse(text) {
+    const el = document.getElementById('responseText');
+    el.innerHTML = text
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+      .replace(/\*(.*?)\*/g,'<em>$1</em>')
+      .replace(/^> (.+)$/gm,'<blockquote>$1</blockquote>');
+    const wrap = document.getElementById('responseWrap');
+    wrap.style.display = 'block';
+    setTimeout(() => wrap.scrollIntoView({ behavior:'smooth', block:'nearest' }), 100);
+  }
+
+  function showError(m) { const e=document.getElementById('errorBox'); e.textContent=m; e.style.display='block'; }
+  function hideError() { document.getElementById('errorBox').style.display='none'; }
+  function copyText() {
+    navigator.clipboard.writeText(document.getElementById('responseText').innerText).then(() => {
+      const b = event.target; b.textContent='✅ Copiato!';
+      setTimeout(() => b.textContent='📋 Copia', 2000);
+    });
+  }
+  function resetForm() {
+    document.getElementById('userInput').value = '';
+    document.getElementById('responseWrap').style.display = 'none';
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    window.scrollTo({ top:0, behavior:'smooth' });
+  }
+</script>
+</body>
+</html>
