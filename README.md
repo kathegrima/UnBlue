@@ -4,7 +4,7 @@
 
 **UnBlue** è un sito motivazionale gratuito pensato per combattere il **Blue Monday** — il lunedì più pesante dell'anno — e ogni giornata no. L'utente descrive cosa lo blocca o lo pesa, e riceve un messaggio motivazionale personalizzato, scritto con tono umano e empatico.
 
-🌐 **Live:** [tuonome.github.io/unblue](https://tuonome.github.io/unblue)
+🌐 **Live:** [kathegrima.github.io/unblue](https://kathegrima.github.io/unblue)
 
 ---
 
